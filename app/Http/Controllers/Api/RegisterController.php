@@ -21,23 +21,7 @@ class RegisterController extends Controller
 
         $token = $user->createToken('LaravelAuthApp')->accessToken;
 
-        return response()->json(
-            [
-                'message' => 'Successfully',
-                'data' => [
-                    'user' => [
-                        'id' => $user->id,
-                        'email' => $user->email,
-                        'created_at' => $user->created_at,
-                        'updated_at' => $user->updated_at,
-                        'role' => 'user'
-                    ],
-                    'access_token' => $token,
-                    'token_type' => 'Bearer',
-                ],
-                'result' => true
-            ],
-            200
-        );
+        $data = ['user' => $user, 'access_token' => $token];
+        return $this->success($data);
     }
 }
