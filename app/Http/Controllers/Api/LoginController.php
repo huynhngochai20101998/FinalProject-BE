@@ -1,16 +1,22 @@
 <?php
 
-namespace App\Http\Controllers\api;
+namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Helper\ResponseData;
 
 class LoginController extends Controller
 {
     /**
      * Login
      */
+
+    public function __construct()
+    {
+        $this->get_fail = ResponseData::dataResponseFail();
+    }
 
     public function login(Request $request)
     {
@@ -21,9 +27,10 @@ class LoginController extends Controller
 
         if (auth()->attempt($data)) {
             $token = auth()->user()->createToken('LaravelAuthApp')->accessToken;
-            return response()->json(['token' => $token], 200);
+            $get_success = ResponseData::dataResponseSuccess($token);
+            return $get_success;
         } else {
-            return response()->json(['error' => 'Unauthorised'], 401);
+            return $this->get_fail;
         }
     }
 
@@ -35,9 +42,15 @@ class LoginController extends Controller
     {
         if (Auth::check()) {
             Auth::user()->token()->revoke();
-            return response()->json(['success' => 'Logout success'], 200);
+            return response()->json([
+                'success' => 'Logout success',
+                'result' => true
+            ], 200);
         } else {
-            return response()->json(['error' => 'Unauthorised'], 401);
+            return response()->json([
+                'error' => 'Unauthorised',
+                'result' => false
+            ], 401);
         }
     }
 }

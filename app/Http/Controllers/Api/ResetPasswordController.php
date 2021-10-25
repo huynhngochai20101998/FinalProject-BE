@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\api;
+namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -9,7 +9,6 @@ use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
-use Illuminate\Validation\ValidationException;
 
 class ResetPasswordController extends Controller
 {
@@ -28,14 +27,16 @@ class ResetPasswordController extends Controller
         );
 
         if ($status == Password::RESET_LINK_SENT) {
-            return [
-                'status' => __($status)
-            ];
+            return response([
+                'status' => __($status),
+                'result' => true
+            ], 200);
         }
 
-        throw ValidationException->withMessages([
-            'email' => [trans($status)]
-        ]);
+        return response([
+            'message' => __($status),
+            'result' => false
+        ], 500);
     }
 
     public function reset(Request $request)
@@ -61,12 +62,14 @@ class ResetPasswordController extends Controller
 
         if ($status == Password::PASSWORD_RESET) {
             return response([
-                'response' => 'Password reset successfully'
+                'response' => 'Password reset successfully',
+                'result' => true
             ]);
         }
 
         return response([
-            'message' => __($status)
+            'message' => __($status),
+            'result' => false
         ], 500);
     }
 }

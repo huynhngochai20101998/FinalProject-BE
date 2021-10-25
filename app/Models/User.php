@@ -47,8 +47,18 @@ class User extends Authenticatable
 
     public function sendPasswordResetNotification($token)
     {
-        $url = 'http://laravel.test/reset-password?token=' . $token;
+        $url = 'https://final-project-team.herokuapp.com/reset-password?token=' . $token;
 
         $this->notify(new ResetPasswordNotification($url));
+    }
+
+    public function isAdmin()
+    {
+        return $this->role === 'admin';
+    }
+
+    public function isUser()
+    {
+        return $this->role === 'user';
     }
 }
