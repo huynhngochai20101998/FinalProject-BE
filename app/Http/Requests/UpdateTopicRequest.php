@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdatePostRequest extends FormRequest
+class UpdateTopicRequest extends FormRequest
 {
     public $validator = null;
 
@@ -27,9 +27,8 @@ class UpdatePostRequest extends FormRequest
     public function rules()
     {
         return [
-            'title' => 'required',
-            'content' => 'required',
-            'topic_id' => 'required'
+            'name' => 'required|max:255',
+            'description' => 'required',
         ];
     }
 

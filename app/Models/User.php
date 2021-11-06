@@ -10,7 +10,7 @@ use Illuminate\Notifications\Notifiable;
 
 use Laravel\Passport\HasApiTokens;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
     use HasApiTokens, HasFactory, Notifiable;
 
@@ -54,15 +54,5 @@ class User extends Authenticatable
         $url = 'https://final-project-team.herokuapp.com/reset-password?token=' . $token;
 
         $this->notify(new ResetPasswordNotification($url));
-    }
-
-    public function isAdmin()
-    {
-        return $this->role === 'admin';
-    }
-
-    public function isUser()
-    {
-        return $this->role === 'user';
     }
 }

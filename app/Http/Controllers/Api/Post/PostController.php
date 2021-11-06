@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Api\Post;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
+use App\Http\Resources\PostResource;
 use App\Models\Post;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
 class PostController extends Controller
@@ -20,30 +22,10 @@ class PostController extends Controller
     {
         try {
             $posts = Post::paginate(5);
-            return $this->success($posts);
-        } catch (\Exception $e) {
-            return $this->error($e);
+            return $this->sendResponse($posts, 'Successfully.');
+        } catch (\Throwable $th) {
+            return $this->sendError('Error', $th, 404);
         }
-    }
-
-    public function show($slug)
-    {
-        try {
-            $post = Post::where('slug', $slug)->first();
-            return $this->success($post);
-        } catch (\Exception $e) {
-            return $this->error($e);
-        }
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-
     }
 
     /**
@@ -54,25 +36,40 @@ class PostController extends Controller
      */
     public function store(StorePostRequest $request)
     {
-        try {
-            $request['slug'] = Str::slug($request['title'], '-');
-            $post = Post::create($request->all());
-            return $this->success($post);
-        } catch (\Exception $e) {
-            return $this->error($e);
-        }
+//        try {
+            if ($request->validator->fails()) {
+                return $this->sendError('Validation error.', $request->validator->messages(), 403);
+            }
+            $post = Post::create([
+                'slug' => Str::slug($request['title']),
+                'title' => $request['title'],
+                'content' => $request['content'],
+                'user_id' => auth()->user()->id,
+                'topic_id' => (int)$request['topic_id'],
+                'members' => (int)$request->members,
+                'schedule'=>$request->schedule,
+            ]);
 
+            return $this->sendResponse($post, 'Post created successfully.');
+//        } catch (\Throwable $th) {
+//            return $this->sendError($th, 'Validation error.', 403);
+//        }
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Display the specified resource.
      *
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function show($slug)
     {
-        //
+        try {
+            $post = new PostResource(Post::where('slug', $slug)->first());
+            return $this->sendResponse($post, 'Post retrieved successfully.');
+        } catch (\Throwable $th) {
+            return $this->sendError('Post not found.', $th, 404);
+        }
     }
 
     /**
@@ -82,16 +79,40 @@ class PostController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $slug)
+    public function update(UpdatePostRequest $request, $slug)
     {
         try {
+            if ($request->validator->fails()) {
+                return $this->sendError('Validation error.', $request->validator->messages(), 403);
+            }
             $post = Post::where('slug', $slug)->first();
-            $post->update($request->all());
-            return $this->success($post);
-        } catch (\Exception $e) {
-            return $this->error($e);
-        }
+            $newSlug = Str::slug($request['title']);
 
+            if ($slug != $newSlug) {
+                $post->update([
+                    'title' => $request->title,
+                    'slug' => $newSlug,
+                    'content' => $request['content'],
+                    'user_id' => auth()->user()->id,
+                    'topic_id' => (int)$request->topic_id,
+                    'members' => (int)$request->members,
+                    'schedule'=>$request->schedule
+                ]);
+            } else {
+                $post->update([
+                    'title' => $request->title,
+                    'content' => $request['content'],
+                    'user_id' => auth()->user()->id,
+                    'topic_id' => (int)$request->topic_id,
+                    'members' => (int)$request->members,
+                    'schedule'=>$request->schedule
+                ]);
+            }
+
+            return $this->sendResponse($post, 'Post updated successfully.');
+        } catch (\Throwable $th) {
+            return $this->sendError('Invalid validation', $th, 403);
+        }
     }
 
     /**
@@ -105,10 +126,9 @@ class PostController extends Controller
         try {
             $post = Post::where('slug', $slug)->first();
             $post->delete();
-            return $this->success($post);
-        } catch (\Exception $e) {
-            return $this->error($e);
+            return $this->sendResponse($post, 'Post deleted successfully.');
+        } catch (\Throwable $th) {
+            return $this->sendError('Error.', $th, 403);
         }
-
     }
 }

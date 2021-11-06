@@ -19,7 +19,7 @@ class CreateProfileTable extends Migration
             $table->string('phone_number');
             $table->date('birthday');
             $table->longText('description');
-            $table->boolean('sex');
+            $table->boolean('gender');
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->timestamps();
         });

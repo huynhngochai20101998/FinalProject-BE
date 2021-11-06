@@ -1,12 +1,12 @@
 <?php
 
-use App\Http\Controllers\api\LoginController;
-use App\Http\Controllers\api\RegisterController;
-use App\Http\Controllers\api\ResetPasswordController;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\Auth\LoginController;
+use App\Http\Controllers\Api\Auth\RegisterController;
+use App\Http\Controllers\Api\Auth\ResetPasswordController;
+use App\Http\Controllers\Api\Auth\VerifyEmailController;
 use App\Http\Controllers\Api\Post\PostController;
-
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\Topic\TopicController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -23,15 +23,25 @@ use App\Http\Controllers\Api\Post\PostController;
  */
 Route::post('login/', [LoginController::class, 'login']);
 Route::post('register/', [RegisterController::class, 'register']);
+Route::post('logout/', [LoginController::class, 'logout'])->middleware('auth:api');
 
 /**
  * Auth
  */
-Route::middleware(['auth:api'])->group(function () {
-    Route::post('logout/', [LoginController::class, 'logout']);
-    Route::resource('posts',PostController::class)->only(['store','update','destroy','show']);
-
+Route::middleware(['auth:api', 'verified'])->group(function () {
+    Route::resource('posts', PostController::class)->only([
+        'store', 'destroy', 'update'
+    ]);
+    Route::resource('topics', TopicController::class)->only([
+        'store', 'destroy', 'update'
+    ]);
 });
+
+/**
+ * Verification Email
+ */
+Route::post('/email/verification-notification', [VerifyEmailController::class, 'reSendVerificationEmail'])->middleware('auth:api', 'throttle:6,1');
+Route::get('/email/verify/{id}/{hash}', [VerifyEmailController::class, 'verify'])->name('verification.verify')->middleware(['auth:api', 'signed']);
 
 /**
  * Reset Password
@@ -39,5 +49,12 @@ Route::middleware(['auth:api'])->group(function () {
 Route::post('forgot-password', [ResetPasswordController::class, 'forgotPassword']);
 Route::put('reset-password', [ResetPasswordController::class, 'reset']);
 
-//public route
-Route::resource('posts',PostController::class)->only(['index']);
+/**
+ * Topic list
+ */
+Route::resource('topics', TopicController::class)->only(['index', 'show']);
+
+/**
+ * Post detail
+ */
+Route::resource('posts', PostController::class)->only(['show', 'index']);

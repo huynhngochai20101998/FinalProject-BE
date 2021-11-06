@@ -2,10 +2,12 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 
-class RegisterRequest extends FormRequest
+class StoreTopicRequest extends FormRequest
 {
+    public $validator = null;
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -24,10 +26,13 @@ class RegisterRequest extends FormRequest
     public function rules()
     {
         return [
-            'first_name' => 'required',
-            'last_name' => 'required',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|confirmed|min:8',
+            'name' => 'required|unique:topics|max:255',
+            'description' => 'required',
         ];
+    }
+
+    protected function failedValidation(Validator $validator)
+    {
+        $this->validator = $validator;
     }
 }

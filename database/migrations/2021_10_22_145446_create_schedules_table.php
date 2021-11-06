@@ -16,11 +16,9 @@ class CreateSchedulesTable extends Migration
         Schema::create('schedules', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            $table->foreignId('day_id')->constrained('days')->onDelete('cascade');
             $table->foreignId('post_id')->constrained('posts')->onDelete('cascade');
-            $table->foreignId('time_id')->constrained('times')->onDelete('cascade');
-            $table->boolean('value');
-            $table->unique(['day_id','time_id']);
+            $table->json('schedule');
+            $table->unique(['user_id','post_id']);
             $table->timestamps();
         });
     }
