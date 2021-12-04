@@ -90,7 +90,7 @@ class GroupController extends Controller
             $apiKeySecret = (string) env('TWILIO_API_SECRET');
 
             $group = Group::where('id', $id)->first();
-            $group_user = GroupUser::where('id', $group->id)->first();
+            $group_user = GroupUser::where('group_id', $group->id)->first();
 
             $user = $request->user();
             $identity = $user->last_name . $user->id;
