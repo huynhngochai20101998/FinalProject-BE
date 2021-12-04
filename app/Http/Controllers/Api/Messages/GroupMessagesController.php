@@ -7,7 +7,6 @@ use App\Http\Requests\MessageRequest;
 use App\Models\Group;
 use App\Models\Message;
 use App\Models\Schedule;
-use Illuminate\Http\Request;
 
 class GroupMessagesController extends Controller
 {

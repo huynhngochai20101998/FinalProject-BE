@@ -65,6 +65,7 @@ class GroupController extends Controller
                 'group_id' => $group->id,
                 'group_members' => $post->registered_members
             ]);
+
             return $this->sendResponse($group, 'create group successfully');
         } catch (\Throwable $th) {
             return $this->sendError([], $th->getMessage());
