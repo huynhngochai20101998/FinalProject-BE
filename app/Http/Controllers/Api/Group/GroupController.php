@@ -67,7 +67,6 @@ class GroupController extends Controller
                     'group_id' => $group->id,
                     'group_members' => $post->registered_members
                 ]);
-                $post->active = false;
             }
 
             return $this->sendResponse($group, 'create group successfully');
@@ -91,6 +90,7 @@ class GroupController extends Controller
             $apiKeySecret = (string) env('TWILIO_API_SECRET');
 
             $group = Group::where('id', $id)->first();
+            $group_user = GroupUser::where('id', $group->id)->first();
 
             $user = $request->user();
             $identity = $user->last_name . $user->id;
@@ -117,6 +117,7 @@ class GroupController extends Controller
                 "member_id" => $user->id,
                 "user_name" => $user_name,
                 "group_id" => $group->id,
+                "count_members" => count($group_user->group_members),
                 "post_id" => $group->post_id,
                 "group_name" => $group_name,
                 'wb_id' => $group->wb_id,
