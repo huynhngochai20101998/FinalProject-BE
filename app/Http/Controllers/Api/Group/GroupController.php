@@ -61,10 +61,14 @@ class GroupController extends Controller
                 'post_id' => $post->id,
                 'user_id' => auth()->user()->id
             ]);
-            $group->group_users = GroupUser::create([
-                'group_id' => $group->id,
-                'group_members' => $post->registered_members
-            ]);
+
+            if ($group) {
+                $group->group_users = GroupUser::create([
+                    'group_id' => $group->id,
+                    'group_members' => $post->registered_members
+                ]);
+                $post->active = false;
+            }
 
             return $this->sendResponse($group, 'create group successfully');
         } catch (\Throwable $th) {

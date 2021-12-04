@@ -56,7 +56,7 @@ class GroupMessagesController extends Controller
             if ($this->checkUserInGroup(auth()->user()->id, $request['group_id'])) {
                 $message = Message::create([
                     'from' => auth()->user()->id,
-                    'group_id' => $request['group_id'],
+                    'group_id' => (int) $request['group_id'],
                     'content' => $request['content'],
                 ]);
                 return $this->sendResponse($message, 'create message successfully');

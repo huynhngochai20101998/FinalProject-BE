@@ -83,7 +83,6 @@ Route::middleware(['auth:api', 'verified'])->group(function () {
         'store', 'index', 'destroy'
     ]);
 });
-Route::get('messages', [GroupMessagesController::class, 'index']);
 
 /**
  * Verification Email
