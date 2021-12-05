@@ -33,9 +33,7 @@ class ScheduleController extends Controller
             if ($request->validator->fails()) {
                 return $this->sendError('Validation error.', $request->validator->messages(), 403);
             }
-
             $user = $request->user();
-
             $schedule = Schedule::create([
                 'post_id' => (int) $request['post_id'],
                 'day_id' => $request['day_id'],
@@ -44,29 +42,30 @@ class ScheduleController extends Controller
                 'value' => $request['value']
             ]);
             $post = Post::where('id', $schedule->post_id)->first();
+            $checkLimitSchedules = Schedule::where([
+                ['user_id', $user->id],
+                ['post_id', $post->id]
+            ])->get();
+
+            if (count($checkLimitSchedules) > $post->number_of_lessons) {
+                $schedule->delete();
+                unset($checkLimitSchedules[count($checkLimitSchedules) - 1]);
+                return $this->sendError('error', 'out of range', 200);
+            }
             // select all member registered and owner in post
             $post->registered_members = Schedule::select('user_id')
                 ->where('post_id', $post->id)->whereNotIn('user_id', [$post->user_id])->get();
             $checkS = $post->registered_members;
             $new_checkS = array_count_values(array_column($checkS, 'user_id'));
             $new_arr = [];
-            // check total schedules of user enough number of lessons compare to owner required
-            foreach ($new_checkS as $key => $member) {
-                if ($member == $post->number_of_lessons) {
-                    $obj = new stdClass();
-                    $obj->user_id = $key;
-                    $new_arr[] = $obj;
-                    // check if total member registered less than or equal total members require in post
-                    if (count($post->registered_members) <= $post->members) {
-                        $post->registered_members = $new_arr;
-                    }
-                } else {
-                    $post->registered_members = [];
+            foreach ($new_checkS as $member => $value) {
+                if ($value == $post->number_of_lessons) {
+                    $new_arr[] = (object) ['user_id' => $member];
                 }
-                $post->save();
             }
-
-            return $this->sendResponse($schedule, 'Successfully.');
+            $post->registered_members = $new_arr;
+            $post->save();
+            return $this->sendResponse($schedule, 'add schedule successfully');
         } catch (\Throwable $th) {
             return $this->sendError('Error.', $th->getMessage(), 404);
         }

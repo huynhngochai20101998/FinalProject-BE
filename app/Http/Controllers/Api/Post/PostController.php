@@ -94,8 +94,8 @@ class PostController extends Controller
             $post->load(['schedules' => function ($query) use ($post) {
                 $query->where('user_id', $post->user_id);
             }]);
-            $post->registered_members;
 
+            $post->registered_members;
             $post->first_name = $user->first_name;
             $post->last_name = $user->last_name;
             $post->avatar = $user->avatar;
