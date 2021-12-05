@@ -94,27 +94,7 @@ class PostController extends Controller
             $post->load(['schedules' => function ($query) use ($post) {
                 $query->where('user_id', $post->user_id);
             }]);
-            // select all member registered and owner in post
-            $post->registered_members = Schedule::select('user_id')
-                ->where('post_id', $post->id)->whereNotIn('user_id', [$post->user_id])->get();
-            $checkS = $post->registered_members;
-            $new_checkS = array_count_values(array_column($checkS, 'user_id'));
-            $new_arr = [];
-            // check total schedules of user enough number of lessons compare to owner required
-            foreach ($new_checkS as $key => $member) {
-                if ($member == $post->number_of_lessons) {
-                    $obj = new stdClass();
-                    $obj->user_id = $key;
-                    $new_arr[] = $obj;
-                    // check if total member registered less than or equal total members require in post
-                    if (count($post->registered_members) <= $post->members) {
-                        $post->registered_members = $new_arr;
-                    }
-                } else {
-                    $post->registered_members = [];
-                }
-                $post->save();
-            }
+            $post->registered_members;
 
             $post->first_name = $user->first_name;
             $post->last_name = $user->last_name;

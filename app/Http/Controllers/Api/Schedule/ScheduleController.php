@@ -7,6 +7,7 @@ use App\Http\Requests\StoreScheduleRequest;
 use App\Models\Post;
 use App\Models\Schedule;
 use Illuminate\Http\Request;
+use stdClass;
 
 class ScheduleController extends Controller
 {
@@ -42,6 +43,28 @@ class ScheduleController extends Controller
                 'user_id' => $user->id,
                 'value' => $request['value']
             ]);
+            $post = Post::where('id', $schedule->post_id)->first();
+            // select all member registered and owner in post
+            $post->registered_members = Schedule::select('user_id')
+                ->where('post_id', $post->id)->whereNotIn('user_id', [$post->user_id])->get();
+            $checkS = $post->registered_members;
+            $new_checkS = array_count_values(array_column($checkS, 'user_id'));
+            $new_arr = [];
+            // check total schedules of user enough number of lessons compare to owner required
+            foreach ($new_checkS as $key => $member) {
+                if ($member == $post->number_of_lessons) {
+                    $obj = new stdClass();
+                    $obj->user_id = $key;
+                    $new_arr[] = $obj;
+                    // check if total member registered less than or equal total members require in post
+                    if (count($post->registered_members) <= $post->members) {
+                        $post->registered_members = $new_arr;
+                    }
+                } else {
+                    $post->registered_members = [];
+                }
+                $post->save();
+            }
 
             return $this->sendResponse($schedule, 'Successfully.');
         } catch (\Throwable $th) {
