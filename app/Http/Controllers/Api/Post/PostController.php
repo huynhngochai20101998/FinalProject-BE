@@ -106,14 +106,14 @@ class PostController extends Controller
                     $obj = new stdClass();
                     $obj->user_id = $key;
                     $new_arr[] = $obj;
-                    $post->registered_members = $new_arr;
                     // check if total member registered less than or equal total members require in post
                     if (count($post->registered_members) <= $post->members) {
-                        $post->save();
-                        $new_post = $post;
-                        $new_post->registered_members;
+                        $post->registered_members = $new_arr;
                     }
+                } else {
+                    $post->registered_members = [];
                 }
+                $post->save();
             }
 
             $post->first_name = $user->first_name;
