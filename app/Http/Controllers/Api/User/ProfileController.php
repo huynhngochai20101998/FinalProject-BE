@@ -93,7 +93,9 @@ class ProfileController extends Controller
     {
         $user = User::where('id', $id)->first();
         $user->load('posts');
-        $user->post_registered = Post::select('*')->whereJsonContains('registered_members', [['user_id' => $user->id]])->get();
+        $user->post_registered = Post::select('*')
+            ->whereJsonContains('registered_members', [['user_id' => $user->id]])
+            ->orderBy('created_at', 'DESC')->get();
         // dd($user->post_registered['user_id']);
         return $this->sendResponse($user, 'Successfully');
     }
