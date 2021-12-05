@@ -110,6 +110,8 @@ class PostController extends Controller
                     // check if total member registered less than or equal total members require in post
                     if (count($post->registered_members) <= $post->members) {
                         $post->save();
+                        $new_post = $post;
+                        $new_post->registered_members;
                     }
                 }
             }
