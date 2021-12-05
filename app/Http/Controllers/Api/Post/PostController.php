@@ -10,6 +10,7 @@ use App\Models\Schedule;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use stdClass;
 
 class PostController extends Controller
 {
@@ -69,7 +70,8 @@ class PostController extends Controller
                 'number_of_lessons' => $request['number_of_lessons'],
                 'number_of_weeks' => $request['number_of_weeks'],
             ]);
-            $post->registered_members = Schedule::select('user_id')->where('post_id', $post->id)->distinct()->get();
+            $post->registered_members = Schedule::select('user_id')
+                ->where('post_id', $post->id)->distinct()->get();
             $post->schedules = Schedule::where('post_id', $post->id)->get();
             return $this->sendResponse($post, 'Post created successfully.');
         } catch (\Throwable $th) {
@@ -88,13 +90,30 @@ class PostController extends Controller
         try {
             $post = Post::where('id', $id)->first();
             $user = User::where('id', $post->user_id)->first();
+            // query schedules by host
             $post->load(['schedules' => function ($query) use ($post) {
                 $query->where('user_id', $post->user_id);
             }]);
-            $post->registered_members = Schedule::select('user_id')->where('post_id', $post->id)->distinct()->skip(1)->take($post->members)->get();
-            if (count($post->registered_members) <= $post->members) {
-                $post->save();
+            // select all member registered and owner in post
+            $post->registered_members = Schedule::select('user_id')
+                ->where('post_id', $post->id)->whereNotIn('user_id', [$post->user_id])->get();
+            $checkS = $post->registered_members;
+            $new_checkS = array_count_values(array_column($checkS, 'user_id'));
+            $new_arr = [];
+            // check total schedules of user enough number of lessons compare to owner required
+            foreach ($new_checkS as $key => $member) {
+                if ($member == $post->number_of_lessons) {
+                    $obj = new stdClass();
+                    $obj->user_id = $key;
+                    $new_arr[] = $obj;
+                    $post->registered_members = $new_arr;
+                    // check if total member registered less than or equal total members require in post
+                    if (count($post->registered_members) <= $post->members) {
+                        $post->save();
+                    }
+                }
             }
+
             $post->first_name = $user->first_name;
             $post->last_name = $user->last_name;
             $post->avatar = $user->avatar;

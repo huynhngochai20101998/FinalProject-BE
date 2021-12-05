@@ -19,7 +19,8 @@ class Post extends Model
         'topic_id',
         'members',
         'number_of_lessons',
-        'number_of_weeks'
+        'number_of_weeks',
+        'registered_members'
     ];
 
     protected $hidden = ['user'];

@@ -28,6 +28,6 @@ class Topic extends Model
 
     public function getPostCountAttribute()
     {
-        return $this->posts->count();
+        return $this->posts->where('active', true)->count();
     }
 }

@@ -9,6 +9,7 @@ use App\Models\Group;
 use App\Models\GroupUser;
 use App\Models\Post;
 use App\Models\Schedule;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Twilio\Jwt\AccessToken;
 use Twilio\Jwt\Grants\VideoGrant;
@@ -91,6 +92,8 @@ class GroupController extends Controller
 
             $group = Group::where('id', $id)->first();
             $group_user = GroupUser::where('group_id', $group->id)->first();
+            $owner = User::where('id', $group->user_id)->first();
+            $owner_username = $owner->first_name . " " . $owner->last_name;
 
             $user = $request->user();
             $identity = $user->last_name . $user->id;
@@ -113,7 +116,10 @@ class GroupController extends Controller
 
             // Serialize the token as a JWT
             $result = [
-                "host_id" => $group->user_id,
+                "owner" => [
+                    "id" => $group->user_id,
+                    "username" => $owner_username,
+                ],
                 "member_id" => $user->id,
                 "user_name" => $user_name,
                 "group_id" => $group->id,
