@@ -34,24 +34,24 @@ class ScheduleController extends Controller
                 return $this->sendError('Validation error.', $request->validator->messages(), 403);
             }
             $user = $request->user();
-            $schedule = Schedule::create([
-                'post_id' => (int) $request['post_id'],
-                'day_id' => $request['day_id'],
-                'time_id' => $request['time_id'],
-                'user_id' => $user->id,
-                'value' => $request['value']
-            ]);
+
+            $schedule = new Schedule();
+            $schedule->post_id = (int) $request['post_id'];
+            $schedule->day_id = $request['day_id'];
+            $schedule->time_id = $request['time_id'];
+            $schedule->user_id = $user->id;
+            $schedule->value = $request['value'];
+
             $post = Post::where('id', $schedule->post_id)->first();
             $checkLimitSchedules = Schedule::where([
                 ['user_id', $user->id],
                 ['post_id', $post->id]
             ])->get();
 
-            if (count($checkLimitSchedules) > $post->number_of_lessons) {
-                $schedule->delete();
-                unset($checkLimitSchedules[count($checkLimitSchedules) - 1]);
+            if (count($checkLimitSchedules) == $post->number_of_lessons) {
                 return $this->sendError('error', 'out of range', 200);
             }
+            $schedule->save();
             // select all member registered and owner in post
             $post->registered_members = Schedule::select('user_id')
                 ->where('post_id', $post->id)->whereNotIn('user_id', [$post->user_id])->get();
