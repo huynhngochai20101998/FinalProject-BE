@@ -57,8 +57,10 @@ class ProfileController extends Controller
         $user = $request->user();
 
         $image = $request->file('avatar');
-        $img = Image::make($image->path());
-        $file_path = public_path('/uploads/avatar/');
+        if ($image) {
+            $img = Image::make($image->path());
+            $file_path = public_path('/uploads/avatar/');
+        }
 
         if ($request->hasFile('avatar')) {
             if ($user->avatar) {
