@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\Messages\GroupMessagesController;
 use App\Http\Controllers\Api\User\ProfileController;
 use App\Models\User;
 use App\Http\Controllers\Api\Group\GroupController;
+use App\Http\Controllers\Api\Post\LikePostController;
 
 /*
 |--------------------------------------------------------------------------
@@ -115,3 +116,9 @@ Route::resource('schedules', ScheduleController::class)->only(['index']);
 Route::post('schedule/check', [ScheduleController::class, 'checkSchedule'])->middleware('auth:api');
 
 Route::get('comments/post/{postId}', [CommentController::class, 'getCommentsByPost']);
+
+/**
+ * Like & Dislike Post
+ */
+Route::post('post/{id}/like', [LikePostController::class, 'likeHandler'])->middleware('auth:api');
+Route::post('post/{id}/dislike', [LikePostController::class, 'dislikeHandler'])->middleware('auth:api');
