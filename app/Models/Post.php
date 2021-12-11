@@ -26,6 +26,7 @@ class Post extends Model
     protected $hidden = ['user'];
 
     protected $appends = [
+        'topic_name',
         'first_name',
         'last_name',
         'profile_image_url',
@@ -63,6 +64,12 @@ class Post extends Model
     public function getAvatarAttribute()
     {
         return $this->user->avatar;
+    }
+
+    public function getTopicNameAttribute()
+    {
+        $topic = Topic::where('id', $this->topic_id)->first();
+        return $topic->name;
     }
 
     public function getProfileImageUrlAttribute()
