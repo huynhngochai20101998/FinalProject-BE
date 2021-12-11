@@ -73,7 +73,7 @@ class Post extends Model
 
     public function getTopicNameAttribute()
     {
-        return $this->topic()->name;
+        return $this->topic->name;
     }
 
     public function getProfileImageUrlAttribute()
