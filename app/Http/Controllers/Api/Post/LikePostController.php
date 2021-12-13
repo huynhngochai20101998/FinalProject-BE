@@ -37,7 +37,7 @@ class LikePostController extends Controller
                 return $this->sendResponse($dislikePost, 'like post successfully');
             }
         } catch (\Throwable $th) {
-            return $this->sendError('error', $th->getMessage(), 401);
+            return $this->sendError('error', $th->getMessage(), 404);
         }
     }
 }
