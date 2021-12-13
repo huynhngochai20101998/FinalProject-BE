@@ -153,9 +153,11 @@ class PostController extends Controller
     {
         try {
             $post = Post::where('id', $id)->first();
+            $post_id = explode(',', $post->id);
             if (auth()->user()->id == $post->user_id) {
+                $post->schedules()->whereIn('post_id', $post_id)->delete();
                 $post->delete();
-                return $this->sendResponse($post, 'Post deleted successfully');
+                return $this->sendResponse(true, 'Post deleted successfully');
             }
             return $this->sendError('Error', 'Unauthorized', 401);
         } catch (\Throwable $th) {
