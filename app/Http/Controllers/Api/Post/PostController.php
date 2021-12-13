@@ -10,7 +10,6 @@ use App\Models\Schedule;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use stdClass;
 
 class PostController extends Controller
 {
