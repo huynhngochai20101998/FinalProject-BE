@@ -121,4 +121,3 @@ Route::get('comments/post/{postId}', [CommentController::class, 'getCommentsByPo
  * Like & Dislike Post
  */
 Route::post('post/{id}/like', [LikePostController::class, 'likeHandler'])->middleware('auth:api');
-Route::post('post/{id}/dislike', [LikePostController::class, 'dislikeHandler'])->middleware('auth:api');
