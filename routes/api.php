@@ -86,6 +86,7 @@ Route::middleware(['auth:api', 'verified'])->group(function () {
     /**
      * Like & Dislike Post
      */
+    Route::post('post/{id}/like', [LikePostController::class, 'likeHandler']);
 });
 
 /**
