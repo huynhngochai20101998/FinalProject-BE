@@ -83,6 +83,7 @@ Route::middleware(['auth:api', 'verified'])->group(function () {
         'store', 'index', 'destroy'
     ]);
 
+    Route::get('user/schedules/{id}', [ScheduleController::class, 'showSchedulesByUser']);
     /**
      * Like & Dislike Post
      */

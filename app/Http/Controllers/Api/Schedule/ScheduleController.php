@@ -21,6 +21,22 @@ class ScheduleController extends Controller
         return Schedule::all();
     }
 
+    public function showSchedulesByUser(Request $request, $id)
+    {
+        try {
+            $schedules = Schedule::where([
+                ['user_id', $request->user()->id],
+                ['post_id', $id]
+            ])->get();
+
+            if ($schedules) {
+                return $this->sendResponse($schedules, 'successfully');
+            }
+        } catch (\Throwable $th) {
+            return $this->sendError('error', $th, 403);
+        }
+    }
+
     /**
      * Store a newly created resource in storage.
      *
