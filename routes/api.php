@@ -56,8 +56,9 @@ Route::middleware(['auth:api', 'verified'])->group(function () {
         'store', 'destroy', 'update'
     ]);
     Route::resource('schedules', ScheduleController::class)->only([
-        'store', 'destroy'
+        'store'
     ]);
+    Route::post('schedule/delete', [ScheduleController::class, 'destroySchedule']);
     Route::resource('groups', GroupController::class)->only([
         'store', 'destroy', 'update', 'show', 'index'
     ]);

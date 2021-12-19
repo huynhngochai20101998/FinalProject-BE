@@ -130,10 +130,14 @@ class ScheduleController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroySchedule(Request $request)
     {
         try {
-            $schedule = Schedule::where('id', $id)->first();
+            $schedule = Schedule::where([
+                ['post_id', $request['post_id']],
+                ['day_id', $request['day_id']],
+                ['time_id', $request['time_id']],
+            ])->first();
             if (auth()->user()->id == $schedule->user_id) {
                 $schedule->delete();
                 return $this->sendResponse($schedule, 'Successfully');
