@@ -53,10 +53,10 @@ class ScheduleController extends Controller
 
             $schedule = new Schedule();
             $schedule->post_id = (int) $request['post_id'];
-            $schedule->day_id = $request['day_id'];
-            $schedule->time_id = $request['time_id'];
+            $schedule->day_id = (int) $request['day_id'];
+            $schedule->time_id = (int) $request['time_id'];
             $schedule->user_id = $user->id;
-            $schedule->value = $request['value'];
+            $schedule->value = (int) $request['value'];
 
             $post = Post::where('id', $schedule->post_id)->first();
             $checkLimitSchedules = Schedule::where([
@@ -134,17 +134,16 @@ class ScheduleController extends Controller
     {
         try {
             $schedule = Schedule::where([
-                ['post_id', $request['post_id']],
-                ['day_id', $request['day_id']],
-                ['time_id', $request['time_id']],
+                'post_id' => $request['post_id'],
+                'day_id' => $request['day_id'],
+                'time_id' => $request['time_id'],
             ])->first();
             if (auth()->user()->id == $schedule->user_id) {
                 $schedule->delete();
                 return $this->sendResponse($schedule, 'Successfully');
             }
-            return $this->sendError('Error', 'Unauthorized', 401);
         } catch (\Throwable $th) {
-            return $this->sendError('Error.', $th->getMessage(), 404);
+            return $this->sendError('Error.', $th->getMessage(), 403);
         }
     }
 }
