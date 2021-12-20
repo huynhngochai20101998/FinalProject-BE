@@ -123,7 +123,7 @@ class GroupController extends Controller
                 "member_id" => $user->id,
                 "user_name" => $user_name,
                 "group_id" => $group->id,
-                "count_members" => count($group_user->group_members),
+                "count_members" => count($group_user->group_members + 1),
                 "post_id" => $group->post_id,
                 "group_name" => $group_name,
                 'wb_id' => $group->wb_id,
