@@ -60,7 +60,6 @@ class PostController extends Controller
             $user = $request->user();
 
             $post = Post::create([
-                'slug' => Str::slug($request['title']),
                 'title' => $request['title'],
                 'content' => $request['content'],
                 'user_id' => $user->id,
@@ -69,6 +68,7 @@ class PostController extends Controller
                 'number_of_lessons' => $request['number_of_lessons'],
                 'number_of_weeks' => $request['number_of_weeks'],
             ]);
+            $post->replicate();
             $post->registered_members = Schedule::select('user_id')
                 ->where('post_id', $post->id)->distinct()->get();
             $post->schedules = Schedule::where('post_id', $post->id)->get();
@@ -123,7 +123,6 @@ class PostController extends Controller
             $user = $request->user();
             if ($post->user_id == $user->id) {
                 $post->update([
-                    'slug' => Str::slug($request['title']),
                     'title' => $request['title'],
                     'content' => $request['content'],
                     'user_id' => $user->id,
