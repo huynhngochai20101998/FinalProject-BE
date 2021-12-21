@@ -52,7 +52,7 @@ class ScheduleController extends Controller
             $user = $request->user();
 
             $schedule = new Schedule();
-            $schedule->post_id = $request['post_id'];
+            $schedule->post_id = (int) $request['post_id'];
             $schedule->day_id = $request['day_id'];
             $schedule->time_id = $request['time_id'];
             $schedule->user_id = $user->id;
