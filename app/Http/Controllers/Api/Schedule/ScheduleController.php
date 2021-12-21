@@ -138,10 +138,10 @@ class ScheduleController extends Controller
                 'day_id' => $request['day_id'],
                 'time_id' => $request['time_id'],
             ])->first();
-            var_dump($schedule);
+
             if (auth()->user()->id == $schedule->user_id) {
                 $schedule->delete();
-                return $this->sendResponse(true, 'successfully');
+                return $this->sendResponse($schedule, 'successfully');
             }
             return $this->sendError('error', 'fail delete');
         } catch (\Throwable $th) {
