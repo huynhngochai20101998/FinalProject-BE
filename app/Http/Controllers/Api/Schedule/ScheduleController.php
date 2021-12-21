@@ -137,6 +137,7 @@ class ScheduleController extends Controller
                 'post_id' => $request['post_id'],
                 'day_id' => $request['day_id'],
                 'time_id' => $request['time_id'],
+                'user_id' => auth()->user()->id
             ])->first();
 
             if (auth()->user()->id == $schedule->user_id) {
