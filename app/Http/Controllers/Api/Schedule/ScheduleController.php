@@ -140,11 +140,11 @@ class ScheduleController extends Controller
             ])->first();
             if (auth()->user()->id == $schedule->user_id) {
                 $schedule->delete();
-                return $this->sendResponse(true, 'Successfully');
+                return $this->sendResponse(true, 'successfully');
             }
             return $this->sendError('error', 'fail delete');
         } catch (\Throwable $th) {
-            return $this->sendError('Error', $th->getMessage(), 403);
+            return $this->sendError('error', $th->getMessage(), 403);
         }
     }
 }
