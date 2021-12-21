@@ -61,7 +61,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function sendPasswordResetNotification($token)
     {
-        $url = 'http://localhost:3000/reset-password?token=' . $token;
+        $url = 'https://tsg-final-dtu.herokuapp.com/reset-password?token=' . $token;
 
         $this->notify(new ResetPasswordNotification($url));
     }
