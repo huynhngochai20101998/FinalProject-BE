@@ -52,11 +52,11 @@ class ScheduleController extends Controller
             $user = $request->user();
 
             $schedule = new Schedule();
-            $schedule->post_id = (int) $request['post_id'];
-            $schedule->day_id = (int) $request['day_id'];
-            $schedule->time_id = (int) $request['time_id'];
+            $schedule->post_id = $request['post_id'];
+            $schedule->day_id = $request['day_id'];
+            $schedule->time_id = $request['time_id'];
             $schedule->user_id = $user->id;
-            $schedule->value = (int) $request['value'];
+            $schedule->value = $request['value'];
 
             $post = Post::where('id', $schedule->post_id)->first();
             $checkLimitSchedules = Schedule::where([
